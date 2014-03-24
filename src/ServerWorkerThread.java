@@ -59,22 +59,34 @@ public class ServerWorkerThread extends Thread {
 	}
 
 	
-		private void onRegisterRequested(String payload) {
+		
+	//payload should be: "REGISTER"
+	private void onRegisterRequested(String payload) {
 
-			Random rand = new Random();
+		Random rand = new Random();
+		ID = rand.nextInt();
+		
+		
+		
+		while (Server.clientEndPoints.containsKey(ID)){
 			ID = rand.nextInt();
-			
-			while (Server.clientEndPoints.containsKey(ID)){
-				ID = rand.nextInt();
-			}
-			
-			Server.clientEndPoints.put(ID, new ClientEndPoint(address, port));
-					
-
-			Server.clientEndPoints.get(ID).messages.add("SETID " + ID);
-			
 		}
+		
+		Server.clientEndPoints.put(ID, new ClientEndPoint(address, port));
+				
+		try {
+			send("SETID " + ID, address, port);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+			
+		//Server.clientEndPoints.get(ID).messages.add("SETID " + ID);
+		
+	}
 	
+	//payload should be: QUIT
 	private void onQuitRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -82,6 +94,7 @@ public class ServerWorkerThread extends Thread {
 		Server.clientEndPoints.remove(ID);
 	}
 	
+	//payload should be: GAMEOVER <USERID>
 	private void onGameOverRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -91,6 +104,7 @@ public class ServerWorkerThread extends Thread {
 		Server.clientEndPoints.get(opponentID).opponent = -1;
 	}
 	
+	//payload should be: MOVE ID xCoordinate yCoordinate <true or false>
 	private void onMoveRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -101,10 +115,16 @@ public class ServerWorkerThread extends Thread {
 		int opponentID = Server.clientEndPoints.get(ID).opponent;
 		
 		if (opponentID != -1){
-			Server.clientEndPoints.get(opponentID).messages.add("MOVE " + move);
+			try {
+				send("MOVE " + move, Server.clientEndPoints.get(opponentID).address, Server.clientEndPoints.get(opponentID).port);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	//payload should be: MATCH <USERID>
 	private void onMatchRequested(String payload){
 		Random rand = new Random();
 		dataScanner = new Scanner(payload);
@@ -117,13 +137,25 @@ public class ServerWorkerThread extends Thread {
 		else{
 			Server.clientEndPoints.get(Server.lookingForMatch).opponent = ID;
 			Server.clientEndPoints.get(ID).opponent = Server.lookingForMatch;
-			
+			int opponentID = Server.clientEndPoints.get(ID).opponent;
 			
 			if (rand.nextBoolean()){
-				Server.clientEndPoints.get(ID).messages.add("PLAY");
+				try {
+					send("PLAY", address, port);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//Server.clientEndPoints.get(ID).messages.add("PLAY");
 			}
 			else{
-				Server.clientEndPoints.get(Server.lookingForMatch).messages.add("PLAY");
+				try {
+					send("PLAY", Server.clientEndPoints.get(opponentID).address, Server.clientEndPoints.get(opponentID).port);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//Server.clientEndPoints.get(Server.lookingForMatch).messages.add("PLAY");
 			}
 			Server.lookingForMatch = -1;
 				
