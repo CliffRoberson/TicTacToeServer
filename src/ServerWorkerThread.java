@@ -60,7 +60,7 @@ public class ServerWorkerThread extends Thread {
 
 	
 		
-	//payload should be: "REGISTER"
+	//payload wanted: "REGISTER"
 	private void onRegisterRequested(String payload) {
 
 		Random rand = new Random();
@@ -86,7 +86,7 @@ public class ServerWorkerThread extends Thread {
 		
 	}
 	
-	//payload should be: QUIT
+	//payload wanted: QUIT
 	private void onQuitRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -94,7 +94,7 @@ public class ServerWorkerThread extends Thread {
 		Server.clientEndPoints.remove(ID);
 	}
 	
-	//payload should be: GAMEOVER <USERID>
+	//payload wanted: GAMEOVER <USERID>
 	private void onGameOverRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -104,7 +104,7 @@ public class ServerWorkerThread extends Thread {
 		Server.clientEndPoints.get(opponentID).opponent = -1;
 	}
 	
-	//payload should be: MOVE ID xCoordinate yCoordinate <true or false>
+	//payload wanted: MOVE ID xCoordinate yCoordinate <true or false>
 	private void onMoveRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
@@ -124,7 +124,7 @@ public class ServerWorkerThread extends Thread {
 		}
 	}
 	
-	//payload should be: MATCH <USERID>
+	//payload wanted: MATCH <USERID>
 	private void onMatchRequested(String payload){
 		Random rand = new Random();
 		dataScanner = new Scanner(payload);
