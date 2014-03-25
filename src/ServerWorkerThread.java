@@ -45,10 +45,7 @@ public class ServerWorkerThread extends Thread {
 				onMoveRequested(payload);
 				return;
 			}
-			else if (payload.startsWith("GAMEOVER")){
-				onGameOverRequested(payload);
-				return;
-			}else if (payload.startsWith("QUIT")){
+			else if (payload.startsWith("QUIT")){
 				onQuitRequested(payload);
 				return;
 			}else {
@@ -60,7 +57,7 @@ public class ServerWorkerThread extends Thread {
 
 	
 		
-	//payload wanted: "REGISTER"
+	//payload wanted: REGISTER
 	private void onRegisterRequested(String payload) {
 
 		Random rand = new Random();
@@ -86,25 +83,19 @@ public class ServerWorkerThread extends Thread {
 		
 	}
 	
-	//payload wanted: QUIT
+	//payload wanted: QUIT <USERID>
 	private void onQuitRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
 		ID = dataScanner.nextInt();
-		Server.clientEndPoints.remove(ID);
+		if (Server.clientEndPoints.containsKey(ID)){
+			Server.clientEndPoints.remove(ID);
+		}
+		
 	}
 	
-	//payload wanted: GAMEOVER <USERID>
-	private void onGameOverRequested(String payload){
-		dataScanner = new Scanner(payload);
-		dataScanner.next();
-		ID = dataScanner.nextInt();
-		int opponentID = Server.clientEndPoints.get(ID).opponent;
-		Server.clientEndPoints.get(ID).opponent = -1;
-		Server.clientEndPoints.get(opponentID).opponent = -1;
-	}
 	
-	//payload wanted: MOVE ID xCoordinate yCoordinate <true or false>
+	//payload wanted: MOVE ID xCoordinate yCoordinate <true=x or false=o>
 	private void onMoveRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
