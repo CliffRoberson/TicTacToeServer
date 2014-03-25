@@ -30,7 +30,7 @@ public class ServerWorkerThread extends Thread {
 		
 			String payload = new String(rxPacket.getData(), 0, rxPacket.getLength()).trim();
 
-			System.out.println("Recieved " + payload + " from " + rxPacket.getAddress().toString());
+			System.out.println("Received " + payload + " from " + rxPacket.getAddress().toString());
 			
 			if (payload.startsWith("REGISTER")) {
 				onRegisterRequested(payload);
@@ -95,7 +95,7 @@ public class ServerWorkerThread extends Thread {
 	}
 	
 	
-	//payload wanted: MOVE ID xCoordinate yCoordinate <true=x or false=o>
+	//payload wanted: MOVE ID xCoordinate yCoordinate <x or o>
 	private void onMoveRequested(String payload){
 		dataScanner = new Scanner(payload);
 		dataScanner.next();
