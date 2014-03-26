@@ -32,6 +32,8 @@ public class ServerWorkerThread extends Thread {
 
 			System.out.println("Received " + payload + " from " + rxPacket.getAddress().toString());
 			
+			
+			
 			if (payload.startsWith("REGISTER")) {
 				onRegisterRequested(payload);
 				return;
@@ -52,7 +54,7 @@ public class ServerWorkerThread extends Thread {
 				
 			}
 			
-			
+			Server.clientEndPoints.get(ID).lastHeardFromTime = System.currentTimeMillis();
 	}
 
 	
@@ -65,7 +67,7 @@ public class ServerWorkerThread extends Thread {
 		
 		
 		
-		while (Server.clientEndPoints.containsKey(ID)){
+		while (Server.clientEndPoints.containsKey(ID) || ID == -1){
 			ID = rand.nextInt();
 		}
 		
@@ -122,6 +124,19 @@ public class ServerWorkerThread extends Thread {
 		dataScanner.next();
 		int ID = dataScanner.nextInt();
 		
+		//If for some reason the person who is looking for a match isn't registered,
+		//that person gets registered when they try to match
+		if (!Server.clientEndPoints.containsKey(ID)){
+			Server.clientEndPoints.put(ID, new ClientEndPoint(address, port));
+		}
+		
+		//If the person who is lookingForMatch doesn't exist anymore,
+		//lookingForMatch becomes -1
+		if (!Server.clientEndPoints.containsKey(Server.lookingForMatch)){
+			Server.lookingForMatch = -1;
+	
+		}
+		
 		if (Server.lookingForMatch == -1){
 			Server.lookingForMatch = ID;
 		}
@@ -158,10 +173,11 @@ public class ServerWorkerThread extends Thread {
 	// send a string, wrapped in a UDP packet, to the specified remote endpoint
 	public void send(String payload, InetAddress address, int port)
 			throws IOException {
-		//System.out.println("HERE's what's being sent" +payload );
+		
 		if (payload != null){
 			DatagramPacket txPacket = new DatagramPacket(payload.getBytes(), payload.length(), address, port);
 			this.socket.send(txPacket);
+			System.out.println("Sending " +payload + " to " + txPacket.getAddress().toString());
 		}
 		
 	}

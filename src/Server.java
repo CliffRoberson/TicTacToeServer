@@ -3,7 +3,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Server {
 
@@ -37,7 +39,7 @@ public class Server {
 			// create a datagram socket, bind to port port. See
 			// http://docs.oracle.com/javase/tutorial/networking/datagrams/ for
 			// details.
-
+			new CleanOutOldUsersThread().start();
 			socket = new DatagramSocket(port);
 			
 
@@ -90,7 +92,32 @@ public class Server {
 		
 		// start it
 		server.start();
+		
 
+	}
+	
+	private class CleanOutOldUsersThread extends Thread{
+		@Override
+		public void run() {
+			
+			//Iterates over the map and if the entry has been around for over an hour without being heard from
+			//it is removed.
+			while (true){
+				try {
+					Thread.sleep(60000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				for(Iterator<Entry<Integer, ClientEndPoint>> it = Server.clientEndPoints.entrySet().iterator(); it.hasNext(); ) {
+				      Entry<Integer, ClientEndPoint> entry = it.next();
+				      if((System.currentTimeMillis() - entry.getValue().lastHeardFromTime) > 3600000) {
+				        it.remove();
+				      }
+				    }
+			}
+		}
+		
 	}
 
 }

@@ -10,6 +10,7 @@ public class ClientEndPoint {
 	
 	protected Queue<String> messages;
 	protected int numberOfTimesMessageSent;
+	long lastHeardFromTime;
 	
 	public ClientEndPoint(InetAddress addr, int port) {
 		
@@ -19,6 +20,7 @@ public class ClientEndPoint {
 		
 		this.numberOfTimesMessageSent = 0;
 		this.messages = new LinkedList<String>();
+		lastHeardFromTime = System.currentTimeMillis();
 	}
 
 	public void setOpponent(int opponent){
