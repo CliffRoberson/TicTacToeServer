@@ -113,6 +113,7 @@ public class Server {
 				      Entry<Integer, ClientEndPoint> entry = it.next();
 				      if((System.currentTimeMillis() - entry.getValue().lastHeardFromTime) > 3600000) {
 				        it.remove();
+				        System.out.println("UserID " + entry.getKey() + " was removed due to inactivity.");
 				      }
 				    }
 			}

@@ -54,7 +54,10 @@ public class ServerWorkerThread extends Thread {
 				
 			}
 			
-			Server.clientEndPoints.get(ID).lastHeardFromTime = System.currentTimeMillis();
+			if (Server.clientEndPoints.containsKey(ID)){
+				Server.clientEndPoints.get(ID).lastHeardFromTime = System.currentTimeMillis();
+			}
+			
 	}
 
 	
